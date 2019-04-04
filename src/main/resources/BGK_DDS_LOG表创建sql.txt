@@ -1,0 +1,82 @@
+同步学校卫生表: 
+在 172.21.29.214  IE浏览器中打开下面的链接即可同步
+http://localhost:8082/tbTable?DDS_DATE=00000000&DDS_NAME=XXWS_JBXX
+同步医疗卫生表: 
+在 172.21.29.214  IE浏览器中打开下面的链接即可同步
+http://localhost:8082/tbTable?DDS_DATE=00000000&DDS_NAME=YLWS_JBXX
+同步公共场所表: 
+在 172.21.29.214  IE浏览器中打开下面的链接即可同步
+http://localhost:8082/tbTable?DDS_DATE=00000000&DDS_NAME=MYCS_JBXX
+
+-- 查看数据库同步日志
+SELECT * FROM BGK_DDS_LOG ORDER BY BEGIN_TIME DESC
+
+在正式库执行语句
+ALTER TABLE YLWS_JBXX MODIFY (BGK_STATUS NUMBER(10));
+ALTER TABLE XXWS_BASEINFO MODIFY (BGK_STATUS NUMBER(10));
+ALTER TABLE GGCS_BASEINFO MODIFY (BGK_STATUS NUMBER(10));
+
+ALTER TABLE XXWS_BASEINFO ADD (TOTAL_HOSPITAL_UNPRO NUMBER(4));
+COMMENT ON TABLE XXWS_BASEINFO IS '校医院（室）、卫生室非卫生技术专业人数';
+ALTER TABLE XXWS_BASEINFO ADD (HOSPITAL_SETTED NUMBER(1));
+COMMENT ON COLUMN XXWS_BASEINFO.HOSPITAL_SETTED IS '校医院（室）、卫生室设置情况:0 未设置；1 设置';
+ALTER TABLE XXWS_BASEINFO ADD (HEALTHROOM_SETTED NUMBER(1));
+COMMENT ON COLUMN XXWS_BASEINFO.HEALTHROOM_SETTED IS '保健室设置情况:0 未设置；1 设置';
+ALTER TABLE XXWS_BASEINFO ADD (TOTAL_HEALTHROOM_PRO NUMBER(4));
+COMMENT ON COLUMN XXWS_BASEINFO.TOTAL_HEALTHROOM_PRO IS '保健室卫生技术专业人数';
+
+create table BGK_DDS_LOG
+(
+  ID               VARCHAR2(32) not null,
+  SENDCODE          VARCHAR2(32),
+  DDS_DATE        VARCHAR2(10),
+  DDS_NAME        VARCHAR2(100),
+  CLIENT_SERVER   VARCHAR2(32),
+  USER_ID         VARCHAR2(32),
+  TOTAL_COUNT     NUMBER(8),
+  OK_COUNT        NUMBER(8),
+  BEGIN_TIME      DATE,
+  END_TIME        DATE,
+  MEMO            VARCHAR2(200)
+)
+tablespace HZXGHIS
+  pctfree 10
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 128K
+    minextents 1
+    maxextents unlimited
+  );
+-- Add comments to the table 
+comment on table BGK_DDS_LOG
+  is '日志表';
+-- Add comments to the columns 
+comment on column BGK_DDS_LOG.id
+  is '唯一编码';
+comment on column BGK_DDS_LOG.SENDCODE
+  is '发送编码';
+comment on column BGK_DDS_LOG.DDS_DATE
+  is '同步日期条件yyyymmdd';
+comment on column BGK_DDS_LOG.DDS_NAME
+is '同步名称（table/view名称）';
+comment on column BGK_DDS_LOG.CLIENT_SERVER
+is '客户端/服务器(CLIENT/SERVER)';
+comment on column BGK_DDS_LOG.USER_ID
+is '用户id';
+comment on column BGK_DDS_LOG.TOTAL_COUNT
+is '数据总量';
+comment on column BGK_DDS_LOG.OK_COUNT
+is '成功条数';
+comment on column BGK_DDS_LOG.BEGIN_TIME
+is '开始时间';
+comment on column BGK_DDS_LOG.END_TIME
+is '结束时间 ';
+comment on column BGK_DDS_LOG.MEMO
+is '备注';
+
+-- 修改表字段长度
+ALTER TABLE YLWS_JBXX MODIFY (BGK_STATUS NUMBER(10));
+ALTER TABLE XXWS_BASEINFO MODIFY (BGK_STATUS NUMBER(10));
+ALTER TABLE GGCS_BASEINFO MODIFY (BGK_STATUS NUMBER(10));
